@@ -1,0 +1,166 @@
+.marketplaceLayout {
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+.header {
+  padding: 3rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.5);
+  margin-bottom: 3rem;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerContent h1 {
+  margin-bottom: 0.5rem;
+}
+
+.mainSection {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.sidebar {
+  width: 250px;
+  padding: 1.5rem;
+  flex-shrink: 0;
+  position: sticky;
+  top: 2rem;
+}
+
+.sidebar h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.filterMargin {
+  margin-top: 2rem;
+}
+
+.filterList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.filterList li {
+  color: #94a3b8;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-size: 0.95rem;
+}
+
+.filterList li:hover {
+  color: white;
+}
+
+.activeFilter {
+  color: #3b82f6 !important;
+  font-weight: 500;
+}
+
+/* Grid & Cards */
+.grid {
+  flex-grow: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.skillCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTop {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.badge, .typeBadge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  font-weight: 600;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.typeBadge {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.authorRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.authorName {
+  color: #cbd5e1;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.skillTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.skillDesc {
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1.25rem;
+}
+
+.price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mainSection {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
+}

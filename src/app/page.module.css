@@ -1,0 +1,220 @@
+.main {
+  padding-top: 2rem;
+  padding-bottom: 5rem;
+}
+
+/* Navigation */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 100px;
+  position: sticky;
+  top: 1rem;
+  z-index: 100;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.logoIcon {
+  font-size: 1.5rem;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navLink {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navLink:hover {
+  color: #fff;
+}
+
+/* Hero Section */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  padding: 2rem 0;
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 10;
+}
+
+.pillBadge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  max-width: 500px;
+  margin-bottom: 1rem;
+}
+
+.ctaGroup {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Hero Visual & Animations */
+.heroVisual {
+  position: relative;
+  height: 500px;
+  width: 100%;
+}
+
+.floatingCard {
+  position: absolute;
+  width: 340px;
+  padding: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: float 6s ease-in-out infinite;
+}
+
+.card1 {
+  top: 15%;
+  right: 5%;
+  z-index: 2;
+  animation-delay: 0s;
+}
+
+.card2 {
+  bottom: 20%;
+  left: 5%;
+  z-index: 3;
+  animation-delay: -3s;
+  background: rgba(30, 41, 59, 0.6); /* Slightly darker */
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.cardHeader h4 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.cardHeader span {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.cardMetric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.activePulse {
+  color: #4ade80;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Features Section */
+.features {
+  padding: 5rem 0;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.iconBox {
+  width: 50px;
+  height: 50px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .heroContent {
+    align-items: center;
+  }
+  .pillBadge {
+    align-self: center;
+  }
+  .heroVisual {
+    display: none;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .navLinks {
+    display: none;
+  }
+}

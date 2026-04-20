@@ -1,65 +1,102 @@
-import Image from "next/image";
+import { Metadata } from 'next';
+import styles from './page.module.css';
+import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'Rent-a-Skill | Knowledge-as-a-Service Portal',
+  description: 'Access elite AI-powered skills and expertise through an exclusive rental marketplace.',
+};
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className={styles.main}>
+      <div className="container">
+        
+        {/* Navigation */}
+        <nav className={styles.navbar}>
+          <div className={styles.logo}>
+            <span className={styles.logoIcon}>⚛</span>
+            <span className="gradient-text">Rent-a-Skill</span>
+          </div>
+          <div className={styles.navLinks}>
+            <Link href="/marketplace" className={styles.navLink}>Marketplace</Link>
+            <Link href="/dashboard" className={styles.navLink}>Expert Dashboard</Link>
+            <Link href="/login" className="btn-secondary">Sign In</Link>
+          </div>
+        </nav>
+
+        {/* Hero Section */}
+        <section className={styles.hero}>
+          <div className={styles.heroContent}>
+            <div className={styles.pillBadge}>✨ Revolutionizing Knowledge Access</div>
+            <h1>
+              Rent world-class <br />
+              <span className="gradient-text">AI Agents & Skills</span>
+            </h1>
+            <p className={styles.heroSubtitle}>
+              Instantly plug elite expertise directly into your workflows. Rent specialized 
+              skills, context-aware AI models, and MCP tools built by top-tier professionals.
+            </p>
+            <div className={styles.ctaGroup}>
+              <Link href="/marketplace" className="btn-primary">Explore Skills</Link>
+              <Link href="/dashboard" className="btn-secondary">I'm an Expert</Link>
+            </div>
+          </div>
+          
+          <div className={styles.heroVisual}>
+            <div className={`glass-panel ${styles.floatingCard} ${styles.card1}`}>
+              <div className={styles.cardHeader}>
+                <div className={styles.avatar}>MB</div>
+                <div>
+                  <h4>McKinsey PPT Engine</h4>
+                  <span>@mbb_expert</span>
+                </div>
+              </div>
+              <div className={styles.cardMetric}>
+                <span>API Calls: 12.4k</span>
+                <span className={styles.activePulse}>● Live MCP</span>
+              </div>
+            </div>
+
+            <div className={`glass-panel ${styles.floatingCard} ${styles.card2}`}>
+              <div className={styles.cardHeader}>
+                <div className={styles.avatar} style={{background: '#c084fc'}}>PR</div>
+                <div>
+                  <h4>Pharma Market Access</h4>
+                  <span>@regulatory_pro</span>
+                </div>
+              </div>
+              <div className={styles.cardMetric}>
+                <span>Subscription: $99/mo</span>
+                <span className={styles.activePulse}>● Live Chat</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className={styles.features}>
+          <h2 className={styles.sectionTitle}>Why Rent-a-Skill?</h2>
+          <div className={styles.grid}>
+            <div className="glass-card">
+              <div className={styles.iconBox}>🔌</div>
+              <h3>Plug & Play APIs</h3>
+              <p>Execute specialized expert tools programmatically via standard MCP and REST endpoints.</p>
+            </div>
+            <div className="glass-card">
+              <div className={styles.iconBox}>💬</div>
+              <h3>Protected Chat</h3>
+              <p>Communicate directly with the expert's contextualized RAG system in our secure sandbox.</p>
+            </div>
+            <div className="glass-card">
+              <div className={styles.iconBox}>🛡️</div>
+              <h3>IP Protection</h3>
+              <p>Experts retain 100% control over their prompts and data through server-rendered execution.</p>
+            </div>
+          </div>
+        </section>
+        
+      </div>
+    </main>
   );
 }
