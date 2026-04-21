@@ -30,12 +30,12 @@ export default function Home() {
           <div className={styles.heroContent}>
             <div className={styles.pillBadge}>✨ Revolutionizing Knowledge Access</div>
             <h1>
-              Rent world-class <br />
-              <span className="gradient-text">AI Agents & Skills</span>
+              Experts Selling <br />
+              <span className="gradient-text">Highly Specialized Skills</span>
             </h1>
             <p className={styles.heroSubtitle}>
-              Instantly plug elite expertise directly into your workflows. Rent specialized 
-              skills, context-aware AI models, and MCP tools built by top-tier professionals.
+              More than just chatbots. Instantly plug elite human expertise directly into your workflows. Rent highly specialized 
+              skills, proprietary contexts, and live MCP tools built by top-tier professionals.
             </p>
             <div className={styles.ctaGroup}>
               <Link href="/marketplace" className="btn-primary">Explore Skills</Link>
