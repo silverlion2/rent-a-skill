@@ -80,8 +80,8 @@ export default function Home() {
           <div className={styles.grid}>
             <div className="glass-card">
               <div className={styles.iconBox}>🔌</div>
-              <h3>Plug & Play APIs</h3>
-              <p>Execute specialized expert tools programmatically via standard MCP and REST endpoints.</p>
+              <h3>MCP Portability</h3>
+              <p>Escape the browser tab. Bring rented skills directly into your local IDEs (Cursor, Windsurf) via our secure proxy.</p>
             </div>
             <div className="glass-card">
               <div className={styles.iconBox}>💬</div>
