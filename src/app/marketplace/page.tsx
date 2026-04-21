@@ -1,67 +1,33 @@
-'use client';
-
 import Link from 'next/link';
-import { useState } from 'react';
+import { createClient } from '@/utils/supabase/server';
 import styles from './page.module.css';
+import { SubscribeButton } from './ClientComponents';
 
-export default function Marketplace() {
-  const [subscribedSkills, setSubscribedSkills] = useState<Record<number, boolean>>({});
-  const [loadingSkill, setLoadingSkill] = useState<number | null>(null);
+export default async function Marketplace() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const handleSubscribe = async (id: number) => {
-    setLoadingSkill(id);
-    // Mocking an external Stripe Checkout delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setSubscribedSkills(prev => ({ ...prev, [id]: true }));
-    setLoadingSkill(null);
-  };
+  // Fetch all published skills from the metrics view
+  const { data: skills } = await supabase
+    .from('skill_metrics')
+    .select('*')
+    .eq('is_published', true)
+    .order('avg_rating', { ascending: false })
+    .order('review_count', { ascending: false });
 
-  const skills = [
-    {
-      id: 1,
-      expert: 'MBB_Expert',
-      initials: 'MB',
-      color: '#3b82f6',
-      title: 'McKinsey PPT Engine',
-      description: 'Auto-generate McKinsey-style 10-slide strategy decks with perfect alignment and dynamic layout logic. Guaranteed zero-defect slide generation.',
-      category: 'Consulting',
-      type: 'MCP Tool',
-      price: '$0.05 / call'
-    },
-    {
-      id: 2,
-      expert: 'Regulatory_Pro',
-      initials: 'PR',
-      color: '#c084fc',
-      title: 'Pharma Market Access (China)',
-      description: 'Interact with a fine-tuned RAG system containing the latest NRDL negotiations, OBA strategies, and Hui Min Bao data.',
-      category: 'Healthcare',
-      type: 'Chat + API',
-      price: '$99 / mo'
-    },
-    {
-      id: 3,
-      expert: 'Quant_Trader_X',
-      initials: 'QT',
-      color: '#10b981',
-      title: 'Monte Carlo Options Modeler',
-      description: 'Pass in a ticker and strike data, get back a complete Monte Carlo simulated risk profile for options strategies via structured JSON.',
-      category: 'Finance',
-      type: 'MCP Tool',
-      price: '$0.15 / call'
-    },
-    {
-      id: 4,
-      expert: 'DesignSystem_AI',
-      initials: 'DS',
-      color: '#f59e0b',
-      title: 'Glassmorphism UX Reviewer',
-      description: 'Upload your React components, and get back fully tailored Glassmorphic CSS/Tailwind overrides.',
-      category: 'Design',
-      type: 'Chat',
-      price: '$29 / mo'
+  // Fetch current user's subscriptions
+  let userSubscriptions = new Set<string>();
+  if (user) {
+    const { data: subs } = await supabase
+      .from('subscriptions')
+      .select('skill_id')
+      .eq('buyer_id', user.id)
+      .eq('status', 'active');
+    
+    if (subs) {
+      subs.forEach(s => userSubscriptions.add(s.skill_id));
     }
-  ];
+  }
 
   return (
     <div className={styles.marketplaceLayout}>
@@ -99,41 +65,46 @@ export default function Marketplace() {
 
         {/* Grid */}
         <div className={styles.grid}>
-          {skills.map(skill => (
-            <div key={skill.id} className={`glass-card ${styles.skillCard}`}>
+          {skills && skills.map(skill => (
+            <div key={skill.skill_id} className={`glass-card ${styles.skillCard}`}>
               <div className={styles.cardTop}>
-                <div className={styles.badge}>{skill.category}</div>
-                <div className={styles.typeBadge}>{skill.type}</div>
+                <div className={styles.badge}>{skill.category || 'General'}</div>
+                <div className={styles.typeBadge}>{skill.type.toUpperCase()}</div>
               </div>
               
               <div className={styles.authorRow}>
-                <div className={styles.avatar} style={{ backgroundColor: skill.color }}>
-                  {skill.initials}
+                <div className={styles.avatar} style={{ backgroundColor: '#3b82f6' }}>
+                  {skill.expert_name?.charAt(0) || '?'}
                 </div>
-                <span className={styles.authorName}>@{skill.expert}</span>
+                <span className={styles.authorName}>@{skill.expert_name || 'Anonymous Expert'}</span>
               </div>
               
               <h3 className={styles.skillTitle}>{skill.title}</h3>
               <p className={styles.skillDesc}>{skill.description}</p>
               
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', fontSize: '0.85rem', color: '#94a3b8' }}>
+                <span style={{ color: '#fbbf24' }}>★ {Number(skill.avg_rating).toFixed(1)}</span>
+                <span>({skill.review_count})</span>
+                <span style={{ margin: '0 0.5rem' }}>•</span>
+                <span>{skill.active_subscribers} active</span>
+              </div>
+              
               <div className={styles.cardFooter}>
-                <div className={styles.price}>{skill.price}</div>
-                {subscribedSkills[skill.id] ? (
-                  <button className="btn-secondary" style={{ color: '#4ade80', borderColor: '#4ade80' }} disabled>
-                    Subscribed ✓
-                  </button>
+                <div className={styles.price}>${skill.monthly_price} / mo</div>
+                {user ? (
+                  <SubscribeButton skillId={skill.skill_id} isSubscribed={userSubscriptions.has(skill.skill_id)} />
                 ) : (
-                  <button 
-                    className="btn-primary" 
-                    onClick={() => handleSubscribe(skill.id)}
-                    disabled={loadingSkill === skill.id}
-                  >
-                    {loadingSkill === skill.id ? 'Processing...' : 'Subscribe'}
-                  </button>
+                  <Link href="/login" className="btn-secondary">Log in to Subscribe</Link>
                 )}
               </div>
             </div>
           ))}
+
+          {(!skills || skills.length === 0) && (
+            <div className="glass-card" style={{ padding: '3rem', gridColumn: '1 / -1', textAlign: 'center', opacity: 0.8 }}>
+              No skills published yet. Be the first to share your expertise!
+            </div>
+          )}
         </div>
       </section>
     </div>

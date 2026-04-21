@@ -1,23 +1,29 @@
-'use client';
-
 import Link from 'next/link';
-import { useState } from 'react';
 import styles from './page.module.css';
+import { createClient } from '@/utils/supabase/server';
+import { DashboardActions, CreateSkillButton } from './ClientComponents';
 
-export default function ExpertDashboard() {
-  const [apiKey, setApiKey] = useState('sk_live_51Mxb...');
-  const [copyText, setCopyText] = useState('Copy');
+export default async function ExpertDashboard() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(apiKey);
-    setCopyText('Copied!');
-    setTimeout(() => setCopyText('Copy'), 2000);
-  };
+  if (!user) {
+    // Should be caught by middleware, but fallback
+    return <div>Unauthorized</div>;
+  }
 
-  const handleRegenerate = () => {
-    const newKey = 'sk_live_' + Math.random().toString(36).substr(2, 9) + '...';
-    setApiKey(newKey);
-  };
+  // Fetch Skills
+  const { data: skills } = await supabase.from('skills').select('*').eq('expert_id', user.id).order('created_at', { ascending: false });
+
+  // Fetch Subscriber count for these skills 
+  // (In a real app, we'd do a count query on subscriptions where skill_id IN our skills)
+  const { data: subscriptions } = await supabase.from('subscriptions').select('id, status');
+
+  // Fetch API call count
+  const { count: apiCallCount } = await supabase
+    .from('execution_logs')
+    .select('*', { count: 'exact', head: true })
+    .eq('expert_id', user.id);
 
   return (
     <div className={styles.dashboardLayout}>
@@ -36,18 +42,18 @@ export default function ExpertDashboard() {
       <section className="container">
         <div className={styles.statsGrid}>
           <div className="glass-card">
-            <h4>Total API Calls (30d)</h4>
-            <div className={styles.statValue}>12,408</div>
-            <div className={styles.statTrend}>+14% from last month</div>
+            <h4>Total Executions</h4>
+            <div className={styles.statValue}>{apiCallCount || 0}</div>
+            <div className={styles.statTrend}>Lifetime API calls</div>
           </div>
           <div className="glass-card">
             <h4>Active Subscribers</h4>
-            <div className={styles.statValue}>84</div>
-            <div className={styles.statTrend}>+5 this week</div>
+            <div className={styles.statValue}>{subscriptions?.length || 0}</div>
+            <div className={styles.statTrend}>0 this week</div>
           </div>
           <div className="glass-card">
             <h4>Estimated Payout</h4>
-            <div className={styles.statValue}>$3,420.50</div>
+            <div className={styles.statValue}>$0.00</div>
             <div className={styles.statTrend}>Processing in 4 days</div>
           </div>
         </div>
@@ -58,67 +64,38 @@ export default function ExpertDashboard() {
           <div className={styles.mainPanel}>
             <div className={styles.panelHeader}>
               <h2>Your Hosted Skills</h2>
-              <button className="btn-primary">+ Create New Skill</button>
+              <CreateSkillButton />
             </div>
 
-            <div className={`glass-card ${styles.skillRow}`}>
-              <div className={styles.skillRowLeft}>
-                <div className={styles.skillIcon}>📊</div>
-                <div>
-                  <h3>McKinsey PPT Engine</h3>
-                  <div className={styles.statusBadge}>Online - MCP Active</div>
+            {skills && skills.length > 0 ? (
+              skills.map((skill) => (
+                <div key={skill.id} className={`glass-card ${styles.skillRow}`}>
+                  <div className={styles.skillRowLeft}>
+                    <div className={styles.skillIcon} style={ skill.type === 'chat' ? { background: 'rgba(192, 132, 252, 0.2)', color: '#c084fc'} : {}}>
+                      {skill.type === 'chat' ? '💬' : skill.type === 'mcp' ? '🔌' : '⚡'}
+                    </div>
+                    <div>
+                      <h3>{skill.title}</h3>
+                      <div className={styles.statusBadge}>
+                        {skill.is_published ? 'Online' : 'Offline'} - {skill.type.toUpperCase()}
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.skillRowRight}>
+                    <button className="btn-secondary">Edit</button>
+                    <button className="btn-secondary">Logs</button>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.skillRowRight}>
-                <button className="btn-secondary">Edit Prompt</button>
-                <button className="btn-secondary">View Logs</button>
-              </div>
-            </div>
-
-            <div className={`glass-card ${styles.skillRow}`}>
-              <div className={styles.skillRowLeft}>
-                <div className={styles.skillIcon} style={{ background: 'rgba(192, 132, 252, 0.2)', color: '#c084fc'}}>💊</div>
-                <div>
-                  <h3>Pharma Market Access (China)</h3>
-                  <div className={styles.statusBadge}>Online - Chat & API</div>
+              ))
+            ) : (
+                <div className="glass-card" style={{ padding: '3rem', textAlign: 'center', opacity: 0.7 }}>
+                  <p>You haven't created any skills yet.</p>
                 </div>
-              </div>
-              <div className={styles.skillRowRight}>
-                <button className="btn-secondary">Update RAG</button>
-                <button className="btn-secondary">View Logs</button>
-              </div>
-            </div>
+            )}
           </div>
 
-          {/* Sidebar Tools */}
-          <div className={styles.sidePanel}>
-            <div className="glass-panel" style={{ padding: '1.5rem' }}>
-              <h3>API Keys</h3>
-              <p style={{ fontSize: '0.9rem', marginBottom: '1rem' }}>
-                Use these keys to register your local MCP servers with our proxy.
-              </p>
-              <div className={styles.apiBox} style={{ marginBottom: '1rem' }}>
-                <code>{apiKey}</code>
-                <button className={styles.copyBtn} onClick={handleCopy}>{copyText}</button>
-              </div>
-              <button 
-                className="btn-secondary" 
-                style={{ width: '100%', fontSize: '0.85rem' }}
-                onClick={handleRegenerate}
-              >
-                Regenerate Key
-              </button>
-            </div>
-
-            <div className="glass-panel" style={{ padding: '1.5rem', marginTop: '2rem' }}>
-              <h3>Quick Actions</h3>
-              <ul className={styles.actionList}>
-                <li>⚙️ Account Settings</li>
-                <li>💳 Payout Details (Stripe)</li>
-                <li>📚 Developer Documentation</li>
-              </ul>
-            </div>
-          </div>
+          {/* Sidebar Tools and Modals injected via Client Component */}
+          <DashboardActions />
 
         </div>
       </section>
