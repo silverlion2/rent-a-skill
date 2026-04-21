@@ -18,6 +18,7 @@ CREATE TABLE public.skills (
   description TEXT,
   category TEXT,
   type TEXT CHECK (type IN ('chat', 'mcp', 'both')),
+  namespace TEXT UNIQUE,
   monthly_price NUMERIC(10,2),
   per_call_price NUMERIC(10,4),
   mcp_endpoint_url TEXT, -- Used if type is 'mcp' or 'both'
@@ -128,6 +129,7 @@ SELECT
   s.description,
   s.category,
   s.type,
+  s.namespace,
   s.monthly_price,
   s.created_at,
   s.is_published,

@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import Anthropic from '@anthropic-ai/sdk';
+import Stripe from 'stripe';
 
 export const runtime = 'edge';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock', {
+  apiVersion: '2023-10-16' as any,
+});
 
 // Helper for Web Crypto SHA-256 hash
 async function hashKey(text: string) {
@@ -28,10 +33,13 @@ export async function POST(request: Request) {
     // Hash the incoming token
     const hashedKey = await hashKey(token);
 
-    // Look up the api_keys table
+    // Look up the api_keys table alongside profile context
     const { data: keyData } = await supabase
       .from('api_keys')
-      .select('buyer_id')
+      .select(`
+        buyer_id,
+        profiles ( stripe_customer_id )
+      `)
       .eq('hashed_key', hashedKey)
       .single();
 
@@ -40,6 +48,10 @@ export async function POST(request: Request) {
     }
 
     const buyerId = keyData.buyer_id;
+    // Typecast assuming array or object from relation
+    const profileRef = Array.isArray(keyData.profiles) ? keyData.profiles[0] : keyData.profiles;
+    const stripeCustomerId = (profileRef as any)?.stripe_customer_id;
+    
     const skillId = body.skill_id;
 
     if (!skillId) {
@@ -99,6 +111,17 @@ export async function POST(request: Request) {
            status: 'success'
          });
 
+         // Record meter event asynchronously to Stripe
+         if (stripeCustomerId && process.env.STRIPE_SECRET_KEY) {
+           stripe.billing.meterEvents.create({
+             event_name: 'rent_a_skill_execution',
+             payload: {
+               stripe_customer_id: stripeCustomerId,
+               value: '1',
+             },
+           }).catch(console.error);
+         }
+
          return NextResponse.json({
            status: 'success',
            execution_mode: 'chat',
@@ -145,6 +168,17 @@ export async function POST(request: Request) {
          mode: 'mcp',
          status: mcpResponse.ok ? 'success' : 'failure'
        });
+
+       // Record meter event asynchronously to Stripe
+       if (mcpResponse.ok && stripeCustomerId && process.env.STRIPE_SECRET_KEY) {
+         stripe.billing.meterEvents.create({
+           event_name: 'rent_a_skill_execution',
+           payload: {
+             stripe_customer_id: stripeCustomerId,
+             value: '1',
+           },
+         }).catch(console.error);
+       }
 
        return NextResponse.json({
          status: 'success',
