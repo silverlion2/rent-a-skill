@@ -144,3 +144,18 @@ LEFT JOIN public.reviews r ON s.id = r.skill_id
 LEFT JOIN public.subscriptions sub ON s.id = sub.skill_id AND sub.status = 'active'
 LEFT JOIN public.execution_logs l ON s.id = l.skill_id
 GROUP BY s.id, p.full_name;
+
+-- 9. Full Text Search Function
+CREATE OR REPLACE FUNCTION search_published_skills(search_term TEXT)
+RETURNS SETOF public.skill_metrics AS $$
+BEGIN
+  RETURN QUERY
+  SELECT *
+  FROM public.skill_metrics
+  WHERE 
+    is_published = true AND
+    to_tsvector('english', coalesce(title, '') || ' ' || coalesce(description, '') || ' ' || coalesce(category, '') || ' ' || coalesce(namespace, '')) 
+    @@ plainto_tsquery('english', search_term)
+  ORDER BY avg_rating DESC, review_count DESC;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

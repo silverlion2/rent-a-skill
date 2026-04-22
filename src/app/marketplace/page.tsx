@@ -1,19 +1,40 @@
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/server';
 import styles from './page.module.css';
-import { SubscribeButton } from './ClientComponents';
+import { SubscribeButton, SearchBar } from './ClientComponents';
 
-export default async function Marketplace() {
+export default async function Marketplace({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; category?: string }>;
+}) {
+  const { q, category } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Fetch all published skills from the metrics view
-  const { data: skills } = await supabase
-    .from('skill_metrics')
-    .select('*')
-    .eq('is_published', true)
-    .order('avg_rating', { ascending: false })
-    .order('review_count', { ascending: false });
+  let skills: any[] = [];
+
+  if (q) {
+    const { data } = await supabase.rpc('search_published_skills', { search_term: q });
+    if (category) {
+      skills = (data || []).filter((s: any) => s.category?.toLowerCase().includes(category.toLowerCase()));
+    } else {
+      skills = data || [];
+    }
+  } else {
+    let query = supabase.from('skill_metrics')
+      .select('*')
+      .eq('is_published', true)
+      .order('avg_rating', { ascending: false })
+      .order('review_count', { ascending: false });
+      
+    if (category) {
+      query = query.ilike('category', `%${category}%`);
+    }
+    
+    const { data } = await query;
+    skills = data || [];
+  }
 
   // Fetch current user's subscriptions
   let userSubscriptions = new Set<string>();
@@ -64,7 +85,11 @@ export default async function Marketplace() {
         </aside>
 
         {/* Grid */}
-        <div className={styles.grid}>
+        <div className={styles.grid} style={{ width: '100%' }}>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <SearchBar />
+          </div>
+
           {skills && skills.map(skill => (
             <div key={skill.skill_id} className={`glass-card ${styles.skillCard}`}>
               <div className={styles.cardTop}>
