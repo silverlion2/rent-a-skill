@@ -18,6 +18,7 @@ export async function createSkill(formData: FormData) {
   const monthlyPrice = parseFloat(formData.get('monthlyPrice') as string) || 0
   const mcpUrl = formData.get('mcpUrl') as string
   const systemPrompt = formData.get('systemPrompt') as string
+  const namespace = formData.get('namespace') as string
 
   const { error } = await supabase.from('skills').insert({
     expert_id: user.id,
@@ -25,6 +26,7 @@ export async function createSkill(formData: FormData) {
     description,
     category,
     type,
+    namespace: namespace || null,
     monthly_price: monthlyPrice,
     mcp_endpoint_url: mcpUrl || null,
     system_prompt: systemPrompt || null,

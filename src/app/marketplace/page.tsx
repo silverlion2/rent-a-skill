@@ -76,7 +76,10 @@ export default async function Marketplace() {
                 <div className={styles.avatar} style={{ backgroundColor: '#3b82f6' }}>
                   {skill.expert_name?.charAt(0) || '?'}
                 </div>
-                <span className={styles.authorName}>@{skill.expert_name || 'Anonymous Expert'}</span>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span className={styles.authorName}>@{skill.expert_name || 'Anonymous Expert'}</span>
+                  {skill.namespace && <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{skill.namespace}</span>}
+                </div>
               </div>
               
               <h3 className={styles.skillTitle}>{skill.title}</h3>
